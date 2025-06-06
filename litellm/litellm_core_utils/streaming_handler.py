@@ -914,7 +914,13 @@ class CustomStreamWrapper:
         return
 
     def chunk_creator(self, chunk: Any):  # type: ignore  # noqa: PLR0915
-        model_response = self.model_response_creator()
+        if isinstance(chunk, BaseModel):
+            chunk_obj = chunk.model_dump()
+        elif isinstance(chunk, dict):
+            chunk_obj = chunk
+        else:
+            chunk_obj = None
+        model_response = self.model_response_creator(chunk=chunk_obj)
         response_obj: Dict[str, Any] = {}
 
         try:
